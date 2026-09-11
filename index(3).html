@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HARRISON ⚡️ QUIZ · Medicina Interna</title>
+<style>
+  :root{
+    --pink-1:#FDD4DD; --pink-2:#F7AEC5; --pink-3:#F794B8; --pink-4:#F67EAA; --pink-5:#F77EBE;
+    --mag-1:#F393E2; --mag-2:#F83B88; --coral:#F96568; --amber:#FFA700; --peach:#FCB27B;
+    --mint-1:#B5EFD4; --mint-2:#B7DEC8; --lav-1:#BEA7E6; --lav-2:#EDA8FD; --lav-3:#EE8DF6; --lav-4:#E46CF3;
+    --yel-1:#FDF18C; --yel-2:#FEE56C; --yel-3:#FFF200; --tan:#EBB39B;
+    --grn-1:#64FFA7; --grn-2:#5FCB7D; --grn-3:#4DBB7E;
+    --cy-1:#60D2E1; --cy-2:#00BDE6; --cy-3:#00A3B5; --cy-4:#94F3FE; --cy-5:#77D8FD; --cy-6:#00E3FD; --cy-7:#26BAF4;
+
+    --ink:#241B2E;
+    --ink-soft:#5B5468;
+    --paper:#FFFBF6;
+    --card:#FFFFFF;
+    --line: rgba(36,27,46,0.10);
+    --good:#31B36A;
+    --good-bg:#E4FAEE;
+    --bad:#F0475D;
+    --bad-bg:#FFE7EA;
+    --radius-lg: 26px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --shadow-btn: 0 4px 0 rgba(36,27,46,0.16);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(900px 500px at 100% -10%, var(--pink-1) 0%, transparent 60%),
+      radial-gradient(700px 500px at -10% 10%, var(--cy-4) 0%, transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    font-family:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3{font-family:"Baloo 2","Nunito",system-ui,sans-serif; margin:0;}
+
+  button{font-family:inherit;}
+
+  /* ===== App shell ===== */
+  .app{max-width:900px; margin:0 auto; padding:18px 18px 60px;}
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:6px 2px 18px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .bolt{
+    width:42px;height:42px;border-radius:14px;
+    background:linear-gradient(135deg, var(--mag-2), var(--lav-4));
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px; box-shadow: var(--shadow-btn);
+    flex:none;
+  }
+  .brand-text h1{font-size:19px; letter-spacing:.2px;}
+  .brand-text p{margin:0; font-size:12px; color:var(--ink-soft);}
+
+  .stats-pill{
+    display:flex; gap:8px;
+  }
+  .stat-chip{
+    background:var(--card); border:2px solid var(--line); border-radius:999px;
+    padding:7px 12px; font-weight:800; font-size:13px; display:flex; align-items:center; gap:6px;
+    box-shadow: 0 2px 0 rgba(36,27,46,0.06);
+  }
+
+  /* ===== Views ===== */
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* Home / specialty grid */
+  .home-head{margin: 6px 0 20px;}
+  .home-head h2{font-size:24px; margin-bottom:6px;}
+  .home-head p{color:var(--ink-soft); font-size:14.5px; line-height:1.5; margin:0; max-width:60ch;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+    gap:14px;
+  }
+
+  .spec-card{
+    position:relative;
+    border-radius: var(--radius-md);
+    padding:18px 16px 16px;
+    cursor:pointer;
+    border:none;
+    text-align:left;
+    color:var(--ink);
+    overflow:hidden;
+    transition: transform .12s ease;
+    box-shadow: 0 5px 0 rgba(36,27,46,0.14);
+    min-height:132px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .spec-card:active{transform:translateY(3px); box-shadow:0 2px 0 rgba(36,27,46,0.14);}
+
+  .spec-card .icon{font-size:26px; line-height:1;}
+  .spec-card .name{font-family:"Baloo 2","Nunito",sans-serif; font-weight:800; font-size:16.5px; margin-top:10px;}
+  .spec-card .meta{font-size:12.5px; font-weight:700; opacity:.72; margin-top:2px;}
+  .spec-card .progress-track{
+    margin-top:12px; height:8px; border-radius:999px; background:rgba(255,255,255,.55);
+    overflow:hidden;
+  }
+  .spec-card .progress-fill{height:100%; border-radius:999px; background:rgba(36,27,46,.55);}
+
+  /* ===== Quiz view ===== */
+  .quiz-header{
+    display:flex; align-items:center; gap:12px; margin-bottom:22px;
+  }
+  .icon-btn{
+    width:40px;height:40px;border-radius:12px; border:2px solid var(--line); background:var(--card);
+    display:flex;align-items:center;justify-content:center; font-size:18px; cursor:pointer; flex:none;
+    box-shadow: 0 2px 0 rgba(36,27,46,0.08);
+  }
+  .icon-btn:active{transform:translateY(2px); box-shadow:none;}
+
+  .progress-outer{
+    flex:1; height:16px; background:var(--line); border-radius:999px; overflow:hidden;
+  }
+  .progress-inner{height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg, var(--grn-2), var(--grn-1)); transition:width .35s ease;}
+
+  .hearts{display:flex; align-items:center; gap:4px; font-weight:800; font-size:14px; flex:none; color:var(--coral);}
+
+  .q-card{
+    background:var(--card); border-radius:var(--radius-lg); padding:26px 24px 24px;
+    box-shadow: 0 6px 0 rgba(36,27,46,0.10);
+    border: 2px solid var(--line);
+  }
+  .q-kicker{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:800; letter-spacing:.3px;
+    padding:5px 11px; border-radius:999px; margin-bottom:14px;
+  }
+  .q-text{font-size:18.5px; line-height:1.5; font-weight:700; margin-bottom:22px;}
+
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .opt{
+    display:flex; align-items:flex-start; gap:12px;
+    text-align:left; width:100%;
+    background:var(--paper); border:2px solid var(--line); border-radius:var(--radius-sm);
+    padding:13px 16px; font-size:15px; line-height:1.45; font-weight:600; color:var(--ink);
+    cursor:pointer; box-shadow: 0 3px 0 rgba(36,27,46,0.08);
+  }
+  .opt:active{transform:translateY(2px); box-shadow:none;}
+  .opt .letter{
+    flex:none; width:26px;height:26px;border-radius:50%;
+    background:var(--card); border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center; font-size:12.5px; font-weight:800;
+  }
+  .opt.selected{border-color:var(--lav-4); background:var(--lav-2);}
+  .opt.correct{border-color:var(--good); background:var(--good-bg);}
+  .opt.correct .letter{background:var(--good); color:#fff; border-color:var(--good);}
+  .opt.incorrect{border-color:var(--bad); background:var(--bad-bg);}
+  .opt.incorrect .letter{background:var(--bad); color:#fff; border-color:var(--bad);}
+  .opt[disabled]{cursor:default;}
+  .opt:disabled:not(.correct):not(.incorrect){opacity:.55;}
+
+  .feedback-box{
+    margin-top:18px; border-radius: var(--radius-md); padding:16px 18px;
+    border:2px solid var(--line); background:var(--paper);
+  }
+  .feedback-box.good{background:var(--good-bg); border-color:var(--good);}
+  .feedback-box.bad{background:var(--bad-bg); border-color:var(--bad);}
+  .feedback-title{font-weight:900; font-size:15px; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+  .feedback-title.good{color:#1c8a52;}
+  .feedback-title.bad{color:#c73349;}
+  .feedback-text{font-size:14.5px; line-height:1.55; color:var(--ink);}
+  .feedback-cap{font-size:12px; color:var(--ink-soft); margin-top:8px; font-weight:700;}
+
+  .quiz-footer{
+    margin-top:22px; display:flex; justify-content:flex-end;
+  }
+  .btn{
+    border:none; border-radius:16px; padding:14px 26px; font-weight:900; font-size:15px;
+    cursor:pointer; box-shadow: var(--shadow-btn); color:var(--ink);
+  }
+  .btn:active{transform:translateY(3px); box-shadow:none;}
+  .btn-primary{background:var(--mag-2); color:#fff; box-shadow:0 4px 0 #b81f5c;}
+  .btn-ghost{background:var(--card); border:2px solid var(--line);}
+  .btn-block{width:100%;}
+  .btn[disabled]{opacity:.45; cursor:not-allowed;}
+
+  /* Results view */
+  .result-card{
+    background:var(--card); border-radius:var(--radius-lg); padding:34px 26px; text-align:center;
+    border:2px solid var(--line); box-shadow: 0 6px 0 rgba(36,27,46,0.10);
+  }
+  .result-emoji{font-size:52px;}
+  .result-card h2{font-size:23px; margin:10px 0 4px;}
+  .result-card p.sub{color:var(--ink-soft); margin:0 0 22px; font-size:14.5px;}
+  .score-row{display:flex; justify-content:center; gap:14px; margin-bottom:24px; flex-wrap:wrap;}
+  .score-chip{
+    border-radius:16px; padding:14px 20px; min-width:96px;
+    font-weight:900;
+  }
+  .score-chip .num{font-size:26px; display:block;}
+  .score-chip .label{font-size:11.5px; font-weight:800; opacity:.75;}
+  .result-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+
+  footer.note{
+    text-align:center; color:var(--ink-soft); font-size:12px; margin-top:30px;
+  }
+
+  @media (max-width:560px){
+    .app{padding:14px 12px 50px;}
+    .q-card{padding:20px 16px 18px;}
+    .q-text{font-size:17px;}
+    .grid{grid-template-columns:repeat(2,1fr);}
+    .spec-card{min-height:118px; padding:14px 12px 12px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="bolt">⚡️</div>
+      <div class="brand-text">
+        <h1>HARRISON QUIZ</h1>
+        <p>Banco de preguntas · Medicina Interna</p>
+      </div>
+    </div>
+    <div class="stats-pill">
+      <div class="stat-chip" id="totalChip">🗂️ 0</div>
+    </div>
+  </div>
+
+  <!-- HOME VIEW -->
+  <div class="view active" id="view-home">
+    <div class="home-head">
+      <h2>Elige una especialidad</h2>
+      <p>Casos clínicos y preguntas tipo test extraídos del banco Harrison, organizados por especialidad. Al terminar cada test podrás repetir solo las preguntas falladas.</p>
+    </div>
+    <div class="grid" id="specGrid"></div>
+    <footer class="note">1 059 preguntas · 12 especialidades · uso personal de estudio</footer>
+  </div>
+
+  <!-- QUIZ VIEW -->
+  <div class="view" id="view-quiz">
+    <div class="quiz-header">
+      <button class="icon-btn" id="btnExit" title="Salir">✕</button>
+      <div class="progress-outer"><div class="progress-inner" id="progressBar"></div></div>
+      <div class="hearts" id="scoreLive">✅ 0</div>
+    </div>
+    <div class="q-card">
+      <span class="q-kicker" id="qKicker">TEMA</span>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="qOptions"></div>
+      <div class="feedback-box" id="feedbackBox" style="display:none;">
+        <div class="feedback-title" id="feedbackTitle"></div>
+        <div class="feedback-text" id="feedbackText"></div>
+        <div class="feedback-cap" id="feedbackCap"></div>
+      </div>
+    </div>
+    <div class="quiz-footer">
+      <button class="btn btn-primary" id="btnNext" disabled>Comprobar</button>
+    </div>
+  </div>
+
+  <!-- RESULTS VIEW -->
+  <div class="view" id="view-results">
+    <div class="result-card">
+      <div class="result-emoji" id="resultEmoji">🎉</div>
+      <h2 id="resultTitle">¡Test completado!</h2>
+      <p class="sub" id="resultSub"></p>
+      <div class="score-row">
+        <div class="score-chip" style="background:var(--good-bg); color:#1c8a52;"><span class="num" id="scoreCorrect">0</span><span class="label">ACIERTOS</span></div>
+        <div class="score-chip" style="background:var(--bad-bg); color:#c73349;"><span class="num" id="scoreWrong">0</span><span class="label">FALLOS</span></div>
+        <div class="score-chip" style="background:var(--pink-1); color:var(--ink);"><span class="num" id="scorePct">0%</span><span class="label">PRECISIÓN</span></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-primary" id="btnRetryFailed">🔁 Repetir solo falladas</button>
+        <button class="btn btn-ghost" id="btnRetryAll">🔄 Repetir todo el test</button>
+        <button class="btn btn-ghost" id="btnHome">🏠 Volver al inicio</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var SPECIALTIES = [
+  {key:'CARDIOLOGIA', name:'Cardiología', icon:'❤️', color:'var(--pink-4)', count:135},
+  {key:'NEUMOLOGIA', name:'Neumología', icon:'🫁', color:'var(--cy-5)', count:92},
+  {key:'NEFROLOGIA', name:'Nefrología', icon:'💧', color:'var(--cy-2)', count:44},
+  {key:'INFECCIOSAS', name:'Infecciosas', icon:'🦠', color:'var(--grn-2)', count:243},
+  {key:'HEMATOLOGIA', name:'Hematología', icon:'🩸', color:'var(--coral)', count:39},
+  {key:'ONCOLOGIA', name:'Oncología', icon:'🎗️', color:'var(--mag-2)', count:57},
+  {key:'AUTOINMUNES', name:'Autoinmunes', icon:'🛡️', color:'var(--lav-1)', count:80},
+  {key:'ENDOCRINOLOGIA', name:'Endocrinología', icon:'⚖️', color:'var(--yel-3)', count:93},
+  {key:'NUTRICION_OBESIDAD', name:'Nutrición y obesidad', icon:'🍽️', color:'var(--amber)', count:14},
+  {key:'NEUROLOGICA', name:'Neurológica', icon:'🧠', color:'var(--lav-2)', count:73},
+  {key:'MISCELANEA', name:'Miscelánea', icon:'🩺', color:'var(--peach)', count:107},
+  {key:'EXTRA', name:'Extra', icon:'✨', color:'var(--mint-2)', count:82}
+];
+var TOTAL = SPECIALTIES.reduce(function(a,s){return a+s.count;},0);
+var byCat = {};
+var LS_KEY = 'harrisonQuizProgress_v2';
+function loadProgress(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(e){ return {}; } }
+function saveProgress(p){ try{ localStorage.setItem(LS_KEY, JSON.stringify(p)); }catch(e){} }
+var progress = loadProgress();
+function shuffle(arr){ var a=arr.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+var views={home:document.getElementById('view-home'),quiz:document.getElementById('view-quiz'),results:document.getElementById('view-results')};
+function showView(name){ Object.keys(views).forEach(function(k){views[k].classList.toggle('active',k===name);}); window.scrollTo(0,0); }
+function showLoadError(catKey,err){
+  var s=SPECIALTIES.find(function(x){return x.key===catKey;});
+  alert('No se pudieron cargar las preguntas de '+(s?s.name:catKey)+'.\n\nComprueba que hayas subido también la carpeta “data” al repositorio y que index.html esté en la raíz.\n\nDetalle: '+err.message);
+}
+async function loadCategory(catKey){
+  if(byCat[catKey]) return byCat[catKey];
+  var res=await fetch('./data/'+encodeURIComponent(catKey)+'.json',{cache:'default'});
+  if(!res.ok) throw new Error('HTTP '+res.status+' al abrir data/'+catKey+'.json');
+  var arr=await res.json();
+  if(!Array.isArray(arr)) throw new Error('Formato de datos no válido');
+  byCat[catKey]=arr;
+  return arr;
+}
+
+document.getElementById('totalChip').textContent='🗂️ '+TOTAL+' preguntas';
+var grid=document.getElementById('specGrid');
+function renderHome(){
+  grid.innerHTML='';
+  SPECIALTIES.forEach(function(s){
+    var best=(progress[s.key]&&progress[s.key].bestPct)||0;
+    var card=document.createElement('button'); card.className='spec-card'; card.style.background=s.color;
+    card.innerHTML='<div class="icon">'+s.icon+'</div><div><div class="name">'+s.name+'</div><div class="meta">'+s.count+' preguntas'+(best?' · mejor '+best+'%':'')+'</div><div class="progress-track"><div class="progress-fill" style="width:'+best+'%"></div></div></div>';
+    card.addEventListener('click',function(){ startQuiz(s.key); }); grid.appendChild(card);
+  });
+}
+renderHome();
+
+var state=null;
+async function startQuiz(catKey,customQuestions,label){
+  var pool=customQuestions;
+  if(!pool){
+    try{
+      var s=SPECIALTIES.find(function(x){return x.key===catKey;});
+      document.getElementById('totalChip').textContent='⏳ Cargando '+(s?s.name:'preguntas')+'…';
+      pool=await loadCategory(catKey);
+      document.getElementById('totalChip').textContent='🗂️ '+TOTAL+' preguntas';
+    }catch(err){ document.getElementById('totalChip').textContent='🗂️ '+TOTAL+' preguntas'; showLoadError(catKey,err); return; }
+  }
+  if(!pool||pool.length===0) return;
+  var n=customQuestions?pool.length:Math.min(pool.length,15);
+  var questions=shuffle(pool).slice(0,n).map(function(q){
+    var letters=Object.keys(q.opts), shuffledLetters=shuffle(letters);
+    return {id:q.id,q:q.q,exp:q.exp,cap:q.cap,correctLetter:q.ans,displayOptions:shuffledLetters.map(function(l){return {letter:l,text:q.opts[l],isCorrect:l===q.ans};})};
+  });
+  state={catKey:catKey,label:label||(SPECIALTIES.find(function(s){return s.key===catKey;})||{}).name,questions:questions,idx:0,correctCount:0,wrongCount:0,failedItems:[],answered:false};
+  showView('quiz'); renderQuestion();
+}
+
+var qKicker=document.getElementById('qKicker'), qText=document.getElementById('qText'), qOptions=document.getElementById('qOptions'), progressBar=document.getElementById('progressBar'), scoreLive=document.getElementById('scoreLive'), feedbackBox=document.getElementById('feedbackBox'), feedbackTitle=document.getElementById('feedbackTitle'), feedbackText=document.getElementById('feedbackText'), feedbackCap=document.getElementById('feedbackCap'), btnNext=document.getElementById('btnNext');
+function specColor(key){var s=SPECIALTIES.find(function(x){return x.key===key;});return s?s.color:'var(--pink-2)';}
+function renderQuestion(){
+  var total=state.questions.length,cur=state.questions[state.idx]; state.answered=false;
+  progressBar.style.width=(100*state.idx/total)+'%'; scoreLive.textContent='✅ '+state.correctCount+' / ❌ '+state.wrongCount;
+  qKicker.textContent=state.label+' · Pregunta '+(state.idx+1)+' de '+total; qKicker.style.background=specColor(state.catKey); qKicker.style.color='var(--ink)';
+  qText.textContent=cur.q; qOptions.innerHTML='';
+  cur.displayOptions.forEach(function(opt,i){var btn=document.createElement('button');btn.className='opt';btn.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'</span><span>'+escapeHtml(opt.text)+'</span>';btn.addEventListener('click',function(){selectOption(btn,opt,cur);});qOptions.appendChild(btn);});
+  feedbackBox.style.display='none'; btnNext.textContent='Comprobar'; btnNext.disabled=true;
+}
+function selectOption(btn,opt,cur){
+  if(state.answered)return; state.answered=true; var correctBtn=null;
+  Array.prototype.forEach.call(qOptions.children,function(child,i){child.disabled=true;if(cur.displayOptions[i].isCorrect)correctBtn=child;});
+  if(opt.isCorrect){btn.classList.add('correct');state.correctCount++;feedbackBox.className='feedback-box good';feedbackTitle.className='feedback-title good';feedbackTitle.textContent='✅ ¡Correcto!';}
+  else{btn.classList.add('incorrect');if(correctBtn)correctBtn.classList.add('correct');state.wrongCount++;state.failedItems.push(cur);feedbackBox.className='feedback-box bad';feedbackTitle.className='feedback-title bad';feedbackTitle.textContent='❌ Incorrecto';}
+  feedbackText.textContent=cur.exp; feedbackCap.textContent=cur.cap?('Harrison, Cap. '+cur.cap):''; feedbackBox.style.display='block'; btnNext.disabled=false; btnNext.textContent=(state.idx===state.questions.length-1)?'Ver resultados':'Siguiente pregunta'; scoreLive.textContent='✅ '+state.correctCount+' / ❌ '+state.wrongCount;
+}
+btnNext.addEventListener('click',function(){if(!state.answered)return;if(state.idx<state.questions.length-1){state.idx++;renderQuestion();}else finishQuiz();});
+document.getElementById('btnExit').addEventListener('click',function(){if(confirm('¿Salir del test? Se perderá el progreso de esta ronda.')){showView('home');renderHome();}});
+function finishQuiz(){
+  progressBar.style.width='100%';var total=state.questions.length,pct=Math.round(100*state.correctCount/total);
+  if(state.catKey){var prev=progress[state.catKey]||{bestPct:0,attempts:0};progress[state.catKey]={bestPct:Math.max(prev.bestPct||0,pct),attempts:(prev.attempts||0)+1};saveProgress(progress);}
+  document.getElementById('resultEmoji').textContent=pct>=80?'🏆':(pct>=50?'💪':'📚'); document.getElementById('resultTitle').textContent=state.label?(state.label+' completada'):'Test completado'; document.getElementById('resultSub').textContent=pct>=80?'¡Excelente dominio de este tema!':(pct>=50?'Vas por buen camino, repasa lo fallado.':'Conviene repasar este tema con calma.'); document.getElementById('scoreCorrect').textContent=state.correctCount; document.getElementById('scoreWrong').textContent=state.wrongCount; document.getElementById('scorePct').textContent=pct+'%';
+  var b=document.getElementById('btnRetryFailed');b.style.display=state.failedItems.length?'inline-flex':'none';b.textContent='🔁 Repetir '+state.failedItems.length+' falladas';showView('results');
+}
+document.getElementById('btnRetryFailed').addEventListener('click',async function(){var failedIds=state.failedItems.map(function(it){return it.id;});var src=await loadCategory(state.catKey);var pool=src.filter(function(q){return failedIds.indexOf(q.id)!==-1;});startQuiz(state.catKey,pool,state.label+' · repaso de falladas');});
+document.getElementById('btnRetryAll').addEventListener('click',function(){startQuiz(state.catKey,null,state.label);});
+document.getElementById('btnHome').addEventListener('click',function(){showView('home');renderHome();});
+
+window.addEventListener('unhandledrejection',function(e){console.error(e.reason);});
+})();
+</script>
+</body>
+</html>
